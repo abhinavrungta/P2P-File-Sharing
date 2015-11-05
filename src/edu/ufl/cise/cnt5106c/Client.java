@@ -108,7 +108,16 @@ public class Client extends ClientHandler {
 				FileData fd = (FileData) in.readObject();
 				System.out.println("File Recieved: " + fd.baseFileName + "." + fd.partNo);
 				String path = this.clientDir + fd.baseFileName + "." + fd.partNo;
-				writeFileOnDisk(fd, path);
+
+				File f = new File(path);
+				FileOutputStream out = new FileOutputStream(f);
+				BufferedOutputStream bos = new BufferedOutputStream(out);
+
+				bos.write(fd.data, 0, fd.length);
+				bos.flush();
+				bos.close();
+				out.close();
+
 				synchronized (summaryFile) {
 					summaryFile.get(fd.baseFileName).addChunk(fd.partNo);
 				}
